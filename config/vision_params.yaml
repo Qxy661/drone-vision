@@ -1,0 +1,38 @@
+# ==========================================
+# Visual Target Tracking Parameters
+# ==========================================
+
+target_detector:
+  ros__parameters:
+    detection_method: color     # color / aruco / template
+    video_source: 0             # 0=webcam, or RTSP URL
+    # HSV range for red target
+    hsv_lower_h: 0
+    hsv_lower_s: 120
+    hsv_lower_v: 70
+    hsv_upper_h: 10
+    hsv_upper_s: 255
+    hsv_upper_v: 255
+    min_area: 500
+    max_area: 50000
+    publish_annotated: true
+
+visual_servo:
+  ros__parameters:
+    image_width: 640
+    image_height: 480
+    tracking_mode: center       # center / follow / circle
+    max_velocity: 0.5           # m/s
+    target_lost_timeout: 3.0    # seconds
+    kp_xy: 0.002
+    ki_xy: 0.0001
+    kd_xy: 0.001
+    test_mode: true
+
+tracking_manager:
+  ros__parameters:
+    test_mode: true
+    search_timeout: 30.0
+    max_track_time: 120.0
+    max_altitude: 5.0
+    max_speed: 1.0
