@@ -183,9 +183,14 @@ class YOLODetectorNode(Node):
     def _detect_color_fallback(self, frame) -> list:
         """备用颜色检测 (YOLOv8 未安装时)"""
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lower = np.array([0, 120, 70])
-        upper = np.array([10, 255, 255])
-        mask = cv2.inRange(hsv, lower, upper)
+        # Red hue wraps around 0/180, so we need two ranges
+        lower1 = np.array([0, 120, 70])
+        upper1 = np.array([10, 255, 255])
+        lower2 = np.array([170, 120, 70])
+        upper2 = np.array([180, 255, 255])
+        mask1 = cv2.inRange(hsv, lower1, upper1)
+        mask2 = cv2.inRange(hsv, lower2, upper2)
+        mask = cv2.bitwise_or(mask1, mask2)
         contours, _ = cv2.findContours(
             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 

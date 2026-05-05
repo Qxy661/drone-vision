@@ -38,6 +38,7 @@ class TrackingManagerNode(Node):
         self.servo_state = "idle"
         self.start_time = 0.0
         self.track_start = 0.0
+        self.rtl_sent = False
 
         # 订阅
         self.create_subscription(String, "/vision/servo_status",
@@ -102,10 +103,15 @@ class TrackingManagerNode(Node):
                 self.state = TrackState.RETURNING
 
         elif self.state == TrackState.RETURNING:
-            if not self.test_mode:
-                self._set_mode("RTL")
-            self.get_logger().info("Returning to launch")
-            self.state = TrackState.IDLE
+            if not self.rtl_sent:
+                if not self.test_mode:
+                    self._set_mode("RTL")
+                self.rtl_sent = True
+                self.get_logger().info("Returning to launch")
+            # Stay in RETURNING until disarmed or manual stop
+            if self.test_mode:
+                self.state = TrackState.IDLE
+                self.rtl_sent = False
 
         self._publish_status()
 

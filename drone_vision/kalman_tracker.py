@@ -65,13 +65,19 @@ class KalmanTracker:
             [0, 1, 0, 0],
         ])
 
-        # 过程噪声协方差 Q
+        # 过程噪声协方差 Q (discrete white noise acceleration model)
+        # G = [dt^2/2, dt^2/2, dt, dt] (per axis)
+        # Q = sigma^2 * G * G^T (block diagonal)
         q = process_noise
-        self.Q = np.eye(4) * q
-        self.Q[0, 0] = q * dt * dt / 2
-        self.Q[1, 1] = q * dt * dt / 2
-        self.Q[2, 2] = q * dt
-        self.Q[3, 3] = q * dt
+        dt2 = dt * dt
+        dt3 = dt2 * dt / 2
+        dt4 = dt2 * dt2 / 4
+        self.Q = np.array([
+            [dt4, 0,   dt3, 0  ],
+            [0,   dt4, 0,   dt3],
+            [dt3, 0,   dt2, 0  ],
+            [0,   dt3, 0,   dt2],
+        ]) * q
 
         # 测量噪声协方差 R
         self.R = np.eye(2) * measurement_noise
@@ -85,6 +91,7 @@ class KalmanTracker:
         self.hits = 0        # 连续匹配次数
         self.misses = 0      # 连续丢失次数
         self.age = 0         # 总帧数
+        self.track_id = -1   # 跟踪 ID (由 MultiTargetTracker 分配)
 
     def init(self, x: float, y: float):
         """用首次检测初始化状态"""
