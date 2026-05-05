@@ -3,11 +3,12 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
+import unittest
 import numpy as np
 import cv2
 
 
-class TestColorDetection:
+class TestColorDetection(unittest.TestCase):
     """Test HSV color detection logic."""
 
     def test_red_detection_hsv(self):
@@ -69,7 +70,7 @@ class TestColorDetection:
         assert len(large) == 0
 
 
-class TestTemplateMatching:
+class TestTemplateMatching(unittest.TestCase):
     def test_template_match(self):
         """Template matching should find exact copy."""
         # Use a scene with features (not all zeros) to avoid edge effects
@@ -84,5 +85,4 @@ class TestTemplateMatching:
 
 
 if __name__ == '__main__':
-    import pytest
-    pytest.main([__file__, '-v'])
+    unittest.main()
